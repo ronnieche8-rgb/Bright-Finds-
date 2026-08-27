@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bright Finds - Handcrafted Wonders</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <span class="logo-star">★</span>
+      <span class="logo-text">Bright Finds</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="store.html">Store Page</a></li>
+        <li><a href="contact.html">Contacts</a></li>
+        <li id="nav-seller" style="display:none;"><a href="dashboard.html">Seller Dashboard</a></li>
+        <li><button id="auth-btn" class="cta-btn" onclick="openAuthModal()">Login</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Discover Unique Handcrafted Treasures ★</h1>
+      <p>Bright Finds brings local craftsmanship straight to your home. Explore our collections or start selling your own creations today!</p>
+      <a href="store.html" class="cta-btn">Explore Store</a>
+    </div>
+    <div class="hero-decoration" style="text-align: center; font-size: 8rem; color: var(--pastel-yellow-accent);">
+      ★
+    </div>
+  </section>
+
+  <main class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem; color: var(--pastel-blue-dark);">Why Choose Bright Finds?</h2>
+    <div class="product-grid">
+      <div class="card">
+        <span class="star-decoration">★</span>
+        <h3>Handmade Authenticity</h3>
+        <p>Every single item is listed directly by local artisans verified via GCash profiles.</p>
+      </div>
+      <div class="card">
+        <span class="star-decoration">★</span>
+        <h3>Direct Seller Support</h3>
+        <p>Support small businesses directly through streamlined automated payments.</p>
+      </div>
+      <div class="card">
+        <span class="star-decoration">★</span>
+        <h3>Secure GCash Payments</h3>
+        <p>Integrated with PayMongo to provide seamless, secure local transaction gateways.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Bright Finds ★</h3>
+        <p>Your destination for local art and handmade items.</p>
+      </div>
+      <div class="sitemap">
+        <h4>Sitemap</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="store.html">Store</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p>Email: support@brightfinds.com</p>
+      </div>
+    </div>
+    <div class="copyright">
+      &copy; 2026 Bright Finds. All rights reserved.
+    </div>
+  </footer>
+
+  <script type="text/javascript">
+    (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: 'YOUR_VOICEFLOW_PROJECT_ID' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production'
+          });
+        }
+        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+    })(document, 'script');
+  </script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
