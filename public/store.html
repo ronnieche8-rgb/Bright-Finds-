@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Store - Bright Finds</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header>
+    <div class="logo-container"><span class="logo-star">★</span><span class="logo-text">Bright Finds</span></div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="store.html">Store Page</a></li>
+        <li><button onclick="checkout()" class="cta-btn">Checkout Cart</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Available Art & Crafts</h2>
+    <div id="product-list" class="product-grid"></div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    async function loadProducts() {
+      const { data: products } = await supabase.from('products').select('*');
+      const list = document.getElementById('product-list');
+      list.innerHTML = products.map(p => `
+        <div class="card">
+          <span class="star-decoration">★</span>
+          <img src="${p.image_url || 'https://via.placeholder.com/200'}" alt="${p.title}">
+          <h3>${p.title}</h3>
+          <p>${p.description}</p>
+          <p><strong>₱${p.price}</strong></p>
+          <button onclick="addToCart('${p.id}', '${p.title}', ${p.price})" class="cta-btn">Add to Cart</button>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
