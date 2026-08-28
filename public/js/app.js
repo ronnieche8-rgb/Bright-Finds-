@@ -77,3 +77,13 @@ async function checkout() {
     window.location.href = session.data.attributes.checkout_url;
   }
 }
+
+// Open auth modal when clicking the login button
+document.getElementById('auth-btn')?.addEventListener('click', () => {
+  const modal = document.getElementById('auth-modal');
+  if (modal) {
+    modal.style.display = 'block';
+  } else {
+    console.error('Auth modal element not found!');
+  }
+});
