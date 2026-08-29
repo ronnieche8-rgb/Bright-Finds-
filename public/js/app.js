@@ -1,5 +1,5 @@
 // =========================================================
-// BRIGHT FINDS — APP.JS
+// BRIGHT FINDS - APP.JS
 // =========================================================
 
 // Initialize Supabase Client
@@ -9,9 +9,6 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkc2x6cmJuYmx2eXhraWNkdm0iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczODE2MjA3M30.B5idVL2X08qnjwvqoGqC8HhwsazxpzQPm3KV0U0h07w';
 
-// IMPORTANT:
-// Do NOT call this variable "supabase" because the
-// Supabase CDN already exposes window.supabase.
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
@@ -20,7 +17,7 @@ const supabaseClient =
 
 
 // =========================================================
-// GLOBAL STATE
+// GLOBAL VARIABLES
 // =========================================================
 
 let currentUser = null;
@@ -39,33 +36,27 @@ document.addEventListener(
   'DOMContentLoaded',
   async () => {
 
-    try {
+    await checkAuthState();
 
-      await checkAuthState();
+    setupAuthForm();
 
-      setupLoginForm();
-
-      setupAuthModal();
-
-      updateNav();
-
-      // Load products only when the product container
-      // exists on the current page.
-      if (
-        document.getElementById('product-list') ||
-        document.getElementById('product-catalog')
-      ) {
-        await loadProducts();
-      }
-
-    } catch (error) {
-
-      console.error(
-        'Bright Finds initialization error:',
-        error
-      );
-
+    // Load products if store page
+    if (
+      document.getElementById('product-list')
+    ) {
+      await loadProducts();
     }
+
+    // Listen for login/logout changes
+    supabaseClient.auth.onAuthStateChange(
+      async (event, session) => {
+
+        currentUser =
+          session?.user || null;
+
+        updateNav();
+      }
+    );
 
   }
 );
@@ -79,55 +70,43 @@ async function checkAuthState() {
 
   try {
 
+    // getSession() safely returns null
+    // when nobody is logged in.
     const {
       data,
       error
     } =
-      await supabaseClient.auth.getUser();
+      await supabaseClient.auth.getSession();
 
     if (error) {
       console.error(
-        'Auth state error:',
+        'Auth session error:',
         error
       );
 
       currentUser = null;
 
-      return;
-    }
+    } else {
 
-    currentUser =
-      data?.user || null;
+      currentUser =
+        data?.session?.user || null;
+
+    }
 
     updateNav();
 
   } catch (error) {
 
     console.error(
-      'Failed to check authentication:',
+      'Auth state error:',
       error
     );
 
     currentUser = null;
 
+    updateNav();
   }
-
 }
-
-
-// Listen for login/logout changes
-supabaseClient.auth.onAuthStateChange(
-  (_event, session) => {
-
-    currentUser =
-      session?.user || null;
-
-    setTimeout(() => {
-      updateNav();
-    }, 0);
-
-  }
-);
 
 
 // =========================================================
@@ -145,6 +124,7 @@ function updateNav() {
     document.getElementById(
       'auth-btn'
     );
+
 
   if (!authBtn) {
     return;
@@ -165,24 +145,12 @@ function updateNav() {
     authBtn.onclick =
       async () => {
 
-        try {
+        const {
+          error
+        } =
+          await supabaseClient.auth.signOut();
 
-          const {
-            error
-          } =
-            await supabaseClient.auth.signOut();
-
-          if (error) {
-            throw error;
-          }
-
-          currentUser = null;
-
-          updateNav();
-
-          window.location.reload();
-
-        } catch (error) {
+        if (error) {
 
           console.error(
             'Logout error:',
@@ -194,9 +162,16 @@ function updateNav() {
             error.message
           );
 
+          return;
         }
 
+        currentUser = null;
+
+        updateNav();
+
+        window.location.reload();
       };
+
 
   } else {
 
@@ -233,285 +208,138 @@ function updateNav() {
 // LOGIN FORM
 // =========================================================
 
-function setupLoginForm() {
+function setupAuthForm() {
 
-  const form =
+  const loginForm =
     document.getElementById(
       'login-form'
     );
 
-  if (!form) {
+  if (!loginForm) {
     return;
   }
 
-  // Prevent duplicate listeners
-  if (
-    form.dataset.initialized === 'true'
-  ) {
-    return;
-  }
 
-  form.dataset.initialized =
-    'true';
-
-  form.addEventListener(
+  loginForm.addEventListener(
     'submit',
-    handleLogin
-  );
+    async (event) => {
 
-}
+      event.preventDefault();
 
+      const email =
+        document.getElementById(
+          'login-email'
+        )?.value
+        ?.trim();
 
-async function handleLogin(event) {
+      const password =
+        document.getElementById(
+          'login-password'
+        )?.value;
 
-  event.preventDefault();
 
-  const emailInput =
-    document.getElementById(
-      'login-email'
-    );
-
-  const passwordInput =
-    document.getElementById(
-      'login-password'
-    );
-
-  if (
-    !emailInput ||
-    !passwordInput
-  ) {
-
-    alert(
-      'Login form is missing.'
-    );
-
-    return;
-  }
-
-  const email =
-    emailInput.value.trim();
-
-  const password =
-    passwordInput.value;
-
-  if (!email || !password) {
-
-    alert(
-      'Please enter your email and password.'
-    );
-
-    return;
-  }
-
-
-  const button =
-    event.target.querySelector(
-      'button[type="submit"]'
-    );
-
-  if (button) {
-    button.disabled = true;
-    button.textContent =
-      'Signing in...';
-  }
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signInWithPassword({
-
-          email,
-          password
-
-        });
-
-
-    if (error) {
-
-      alert(
-        'Login Error: ' +
-        error.message
-      );
-
-      return;
-    }
-
-
-    currentUser =
-      data?.user || null;
-
-
-    // Close modal
-    const modal =
-      document.getElementById(
-        'auth-modal'
-      );
-
-    if (modal) {
-      modal.style.display =
-        'none';
-    }
-
-
-    updateNav();
-
-
-    alert(
-      'Login successful! Welcome back.'
-    );
-
-
-    // Clear form
-    event.target.reset();
-
-  } catch (error) {
-
-    console.error(
-      'Login error:',
-      error
-    );
-
-    alert(
-      'Login failed: ' +
-      error.message
-    );
-
-  } finally {
-
-    if (button) {
-
-      button.disabled =
-        false;
-
-      button.textContent =
-        'Sign In';
-
-    }
-
-  }
-
-}
-
-
-// =========================================================
-// AUTH MODAL
-// =========================================================
-
-function setupAuthModal() {
-
-  const modal =
-    document.getElementById(
-      'auth-modal'
-    );
-
-  if (!modal) {
-    return;
-  }
-
-  // Close when clicking outside modal content
-  modal.addEventListener(
-    'click',
-    event => {
-
-      if (
-        event.target === modal
-      ) {
-
-        modal.style.display =
-          'none';
-
-      }
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// REGISTER SUPPORT
-// =========================================================
-
-// This function is available if another page has
-// registration fields.
-window.registerUser =
-  async function registerUser(
-    email,
-    password,
-    fullName,
-    gcash
-  ) {
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth
-          .signUp({
-
-            email,
-            password,
-
-            options: {
-
-              data: {
-
-                full_name:
-                  fullName,
-
-                gcash_number:
-                  gcash
-
-              }
-
-            }
-
-          });
-
-
-      if (error) {
+      if (!email || !password) {
 
         alert(
-          'Registration Error: ' +
-          error.message
+          'Please enter your email and password.'
         );
 
-        return null;
-
+        return;
       }
 
 
-      alert(
-        'Registration successful! Check your email if confirmation is required.'
-      );
+      const submitButton =
+        loginForm.querySelector(
+          'button[type="submit"]'
+        );
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerText =
+          'Signing in...';
+      }
 
 
-      return data;
+      try {
 
-    } catch (error) {
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+              email,
+              password
+            });
 
-      console.error(
-        'Registration error:',
-        error
-      );
 
-      alert(
-        'Registration failed: ' +
-        error.message
-      );
+        if (error) {
 
-      return null;
+          console.error(
+            'Login error:',
+            error
+          );
+
+          alert(
+            'Login failed: ' +
+            error.message
+          );
+
+          return;
+        }
+
+
+        currentUser =
+          data?.user || null;
+
+        updateNav();
+
+
+        const modal =
+          document.getElementById(
+            'auth-modal'
+          );
+
+        if (modal) {
+          modal.style.display =
+            'none';
+        }
+
+
+        // Clear the form
+        loginForm.reset();
+
+
+        // Refresh so all pages/UI
+        // recognize the logged-in account.
+        window.location.reload();
+
+
+      } catch (error) {
+
+        console.error(
+          'Login crash:',
+          error
+        );
+
+        alert(
+          'Something went wrong while logging in.'
+        );
+
+      } finally {
+
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerText =
+            'Sign In';
+        }
+
+      }
 
     }
+  );
 
-  };
+}
 
 
 // =========================================================
@@ -519,6 +347,16 @@ window.registerUser =
 // =========================================================
 
 async function loadProducts() {
+
+  const list =
+    document.getElementById(
+      'product-list'
+    );
+
+  if (!list) {
+    return;
+  }
+
 
   try {
 
@@ -528,227 +366,110 @@ async function loadProducts() {
     } =
       await supabaseClient
         .from('products')
-        .select(`
-          *,
-          reviews(rating)
-        `);
+        .select('*')
+        .eq('is_active', true)
+        .order(
+          'created_at',
+          {
+            ascending: false
+          }
+        );
 
 
     if (error) {
 
       console.error(
-        'Error fetching products:',
+        'Products error:',
         error
       );
 
-      return;
+      list.innerHTML =
+        '<p>Unable to load products.</p>';
 
+      return;
     }
 
 
-    const list =
-      document.getElementById(
-        'product-list'
-      );
-
-    const catalog =
-      document.getElementById(
-        'product-catalog'
-      );
-
-
-    // Store page uses product-list
-    if (list) {
+    if (!products?.length) {
 
       list.innerHTML =
-        (products || [])
-          .map(
-            product => {
+        '<p>No products available yet.</p>';
 
-              const title =
-                product.title ||
-                product.name ||
-                'Untitled item';
-
-              const description =
-                product.description ||
-                '';
-
-              const price =
-                Number(
-                  product.price || 0
-                );
-
-
-              return `
-
-                <div class="card">
-
-                  <span
-                    class="star-decoration"
-                  >
-                    ★
-                  </span>
-
-                  <img
-                    src="${
-                      product.image_url ||
-                      'https://via.placeholder.com/200'
-                    }"
-                    alt="${escapeHtml(title)}"
-                  >
-
-                  <h3>
-                    ${escapeHtml(title)}
-                  </h3>
-
-                  <p>
-                    ${escapeHtml(description)}
-                  </p>
-
-                  <p>
-                    <strong>
-                      ₱${price.toFixed(2)}
-                    </strong>
-                  </p>
-
-                  <button
-                    class="cta-btn"
-                    onclick="addToCart(
-                      '${product.id}',
-                      ${JSON.stringify(title)},
-                      ${price}
-                    )"
-                  >
-                    Add to Cart
-                  </button>
-
-                </div>
-
-              `;
-
-            }
-          )
-          .join('');
-
+      return;
     }
 
 
-    // Product-catalog compatibility
-    if (catalog) {
+    list.innerHTML =
+      products
+        .map(product => {
 
-      catalog.innerHTML =
-        (products || [])
-          .map(
-            product => {
+          const title =
+            product.title ||
+            product.name ||
+            'Untitled Product';
 
-              const title =
-                product.title ||
-                product.name ||
-                'Untitled item';
+          const image =
+            product.image_url ||
+            'https://via.placeholder.com/200';
 
-              const description =
-                product.description ||
-                '';
-
-              const price =
-                Number(
-                  product.price || 0
-                );
-
-              const reviews =
-                product.reviews || [];
-
-              const avgRating =
-                reviews.length
-                  ? (
-                      reviews.reduce(
-                        (
-                          total,
-                          review
-                        ) =>
-                          total +
-                          Number(
-                            review.rating || 0
-                          ),
-                        0
-                      ) /
-                      reviews.length
-                    ).toFixed(1)
-                  : 'No ratings';
+          const price =
+            Number(product.price || 0)
+              .toFixed(2);
 
 
-              return `
+          return `
+            <div class="card">
 
-                <div
-                  class="product-card"
-                >
+              <span class="star-decoration">
+                ★
+              </span>
 
-                  <img
-                    src="${
-                      product.image_url ||
-                      'https://via.placeholder.com/300'
-                    }"
-                    class="product-image"
-                    alt="${escapeHtml(title)}"
-                  >
+              <img
+                src="${image}"
+                alt="${title}"
+              >
 
-                  <h3>
-                    ${escapeHtml(title)}
-                  </h3>
+              <h3>
+                ${title}
+              </h3>
 
-                  <p>
-                    ${escapeHtml(description)}
-                  </p>
+              <p>
+                ${product.description || ''}
+              </p>
 
-                  <div
-                    class="star-rating"
-                  >
-                    ★ ${avgRating}
-                  </div>
+              <p>
+                <strong>
+                  ₱${price}
+                </strong>
+              </p>
 
-                  <p>
-                    <strong>
-                      PHP ${price.toFixed(2)}
-                    </strong>
-                  </p>
+              <button
+                onclick="addToCart(
+                  '${product.id}',
+                  ${JSON.stringify(title)},
+                  ${Number(product.price || 0)}
+                )"
+                class="cta-btn"
+              >
+                Add to Cart
+              </button>
 
-                  <button
-                    class="cta-button"
-                    onclick="initiatePayment(
-                      '${product.id}',
-                      ${price},
-                      ${JSON.stringify(title)}
-                    )"
-                  >
-                    Buy via GCash
-                  </button>
+            </div>
+          `;
 
-                  <button
-                    class="secondary-button"
-                    onclick="openReviewModal(
-                      '${product.id}'
-                    )"
-                  >
-                    Review
-                  </button>
+        })
+        .join('');
 
-                </div>
-
-              `;
-
-            }
-          )
-          .join('');
-
-    }
 
   } catch (error) {
 
     console.error(
-      'Product loading error:',
+      'Products loading crash:',
       error
     );
+
+    list.innerHTML =
+      '<p>Unable to load products.</p>';
 
   }
 
@@ -760,7 +481,7 @@ async function loadProducts() {
 // =========================================================
 
 window.addToCart =
-  function addToCart(
+  function (
     productId,
     title,
     price
@@ -780,19 +501,10 @@ window.addToCart =
     } else {
 
       cart.push({
-
-        id:
-          productId,
-
-        title:
-          title,
-
-        price:
-          Number(price),
-
-        quantity:
-          1
-
+        id: productId,
+        title,
+        price: Number(price),
+        quantity: 1
       });
 
     }
@@ -805,27 +517,23 @@ window.addToCart =
 
 
     alert(
-      'Item added to cart!'
+      `${title} added to cart!`
     );
 
   };
 
 
 // =========================================================
-// PAYMONGO CHECKOUT
+// CHECKOUT BUTTON
 // =========================================================
 
-window.initiatePayment =
-  async function initiatePayment(
-    productId,
-    price,
-    title
-  ) {
+window.checkout =
+  async function () {
 
     if (!currentUser) {
 
       alert(
-        'Please login to purchase items.'
+        'Please login before checking out.'
       );
 
       const modal =
@@ -839,7 +547,16 @@ window.initiatePayment =
       }
 
       return;
+    }
 
+
+    if (!cart.length) {
+
+      alert(
+        'Your cart is empty.'
+      );
+
+      return;
     }
 
 
@@ -847,46 +564,35 @@ window.initiatePayment =
 
       const response =
         await fetch(
-          '/api/create-checkout',
+          '/api/create-checkout.js',
           {
-
-            method:
-              'POST',
+            method: 'POST',
 
             headers: {
-
               'Content-Type':
                 'application/json'
-
             },
 
             body:
               JSON.stringify({
-
-                items: [
-
-                  {
-
-                    productId,
+                items: cart.map(
+                  item => ({
+                    title:
+                      item.title,
 
                     price:
-                      Number(price),
-
-                    title,
-
-                    description:
-                      title,
+                      item.price,
 
                     quantity:
-                      1
+                      item.quantity,
 
-                  }
-
-                ],
+                    description:
+                      item.title
+                  })
+                ),
 
                 buyerId:
                   currentUser.id
-
               })
 
           }
@@ -900,38 +606,26 @@ window.initiatePayment =
       if (!response.ok) {
 
         throw new Error(
-          data.error ||
-          'Checkout initialization failed.'
+          data?.error ||
+          'Checkout failed.'
         );
 
       }
 
 
-      // Different PayMongo response formats
-      // are supported.
-      const checkoutUrl =
-        data.checkoutUrl ||
-        data.data?.attributes
-          ?.checkout_url;
-
-
-      if (checkoutUrl) {
+      if (data.checkoutUrl) {
 
         window.location.href =
-          checkoutUrl;
+          data.checkoutUrl;
 
       } else {
-
-        console.error(
-          'PayMongo response:',
-          data
-        );
 
         alert(
           'Checkout initialization failed.'
         );
 
       }
+
 
     } catch (error) {
 
@@ -941,285 +635,9 @@ window.initiatePayment =
       );
 
       alert(
-        'Checkout error: ' +
+        'Checkout failed: ' +
         error.message
       );
-
-    }
-
-  };
-
-
-// =========================================================
-// SELLER — CREATE PRODUCT
-// =========================================================
-
-async function handleCreateProduct(event) {
-
-  event.preventDefault();
-
-  if (!currentUser) {
-
-    alert(
-      'Please login first.'
-    );
-
-    return;
-
-  }
-
-
-  const title =
-    document.getElementById(
-      'prod-title'
-    )?.value;
-
-
-  const description =
-    document.getElementById(
-      'prod-desc'
-    )?.value;
-
-
-  const price =
-    parseFloat(
-      document.getElementById(
-        'prod-price'
-      )?.value
-    );
-
-
-  const category =
-    document.getElementById(
-      'prod-category'
-    )?.value;
-
-
-  const imageUrl =
-    document.getElementById(
-      'prod-image'
-    )?.value;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from('products')
-      .insert([{
-
-        seller_id:
-          currentUser.id,
-
-        title,
-
-        description,
-
-        price,
-
-        category,
-
-        image_url:
-          imageUrl
-
-      }]);
-
-
-  if (error) {
-
-    alert(
-      'Error publishing product: ' +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  alert(
-    'Product listed successfully!'
-  );
-
-
-  closeModal(
-    'sell-modal'
-  );
-
-
-  loadProducts();
-
-}
-
-
-// =========================================================
-// DASHBOARD
-// =========================================================
-
-window.loadDashboardData =
-  async function loadDashboardData() {
-
-    if (!currentUser) {
-      return;
-    }
-
-
-    // -----------------------------------------------------
-    // PURCHASES
-    // -----------------------------------------------------
-
-    const {
-      data: purchases,
-      error: purchaseError
-    } =
-      await supabaseClient
-        .from('orders')
-        .select(
-          `*,
-           products(title)`
-        )
-        .eq(
-          'buyer_id',
-          currentUser.id
-        );
-
-
-    if (purchaseError) {
-
-      console.error(
-        'Purchase history error:',
-        purchaseError
-      );
-
-    }
-
-
-    const boughtContainer =
-      document.getElementById(
-        'bought-history'
-      );
-
-
-    if (boughtContainer) {
-
-      boughtContainer.innerHTML =
-        purchases?.map(
-          purchase => `
-
-            <p>
-
-              Product:
-              ${escapeHtml(
-                purchase.products?.title ||
-                'Item'
-              )}
-
-              -
-
-              Amount:
-              PHP ${
-                Number(
-                  purchase.amount || 0
-                ).toFixed(2)
-              }
-
-              -
-
-              Status:
-              ${escapeHtml(
-                purchase.status ||
-                'Unknown'
-              )}
-
-            </p>
-
-          `
-        ).join('')
-        ||
-        '<p>No purchase history found.</p>';
-
-    }
-
-
-    // -----------------------------------------------------
-    // SALES
-    // -----------------------------------------------------
-
-    const {
-      data: sales,
-      error: salesError
-    } =
-      await supabaseClient
-        .from('orders')
-        .select(
-          `*,
-           products!inner(
-             title,
-             seller_id
-           )`
-        )
-        .eq(
-          'products.seller_id',
-          currentUser.id
-        );
-
-
-    if (salesError) {
-
-      console.error(
-        'Sales history error:',
-        salesError
-      );
-
-    }
-
-
-    const salesContainer =
-      document.getElementById(
-        'sales-history'
-      );
-
-
-    if (salesContainer) {
-
-      salesContainer.innerHTML =
-        sales?.map(
-          sale => `
-
-            <p>
-
-              Item Sold:
-              ${escapeHtml(
-                sale.products?.title ||
-                'Item'
-              )}
-
-              -
-
-              Amount:
-              PHP ${
-                Number(
-                  sale.amount || 0
-                ).toFixed(2)
-              }
-
-              -
-
-              Date:
-              ${
-                sale.created_at
-                  ? new Date(
-                      sale.created_at
-                    ).toLocaleDateString()
-                  : 'Unknown'
-              }
-
-            </p>
-
-          `
-        ).join('')
-        ||
-        '<p>No sales history recorded yet.</p>';
 
     }
 
@@ -1230,25 +648,13 @@ window.loadDashboardData =
 // MODALS
 // =========================================================
 
-window.openModal =
-  function openModal(id) {
+window.closeAuthModal =
+  function () {
 
     const modal =
-      document.getElementById(id);
-
-    if (modal) {
-      modal.style.display =
-        'flex';
-    }
-
-  };
-
-
-window.closeModal =
-  function closeModal(id) {
-
-    const modal =
-      document.getElementById(id);
+      document.getElementById(
+        'auth-modal'
+      );
 
     if (modal) {
       modal.style.display =
@@ -1259,280 +665,22 @@ window.closeModal =
 
 
 // =========================================================
-// REVIEWS
+// EXPOSE SUPABASE FOR store.html
 // =========================================================
+//
+// IMPORTANT:
+// We use "supabaseClient" internally so
+// there is NO duplicate "const supabase"
+// declaration problem.
+//
+// store.html can still access:
+// window.supabaseClient
+//
 
-window.openReviewModal =
-  function openReviewModal(
-    productId
-  ) {
-
-    const input =
-      document.getElementById(
-        'review-product-id'
-      );
-
-    if (input) {
-      input.value =
-        productId;
-    }
-
-    openModal(
-      'review-modal'
-    );
-
-  };
-
-
-async function handleCreateReview(event) {
-
-  event.preventDefault();
-
-  if (!currentUser) {
-
-    alert(
-      'Please login first.'
-    );
-
-    return;
-
-  }
-
-
-  const productId =
-    document.getElementById(
-      'review-product-id'
-    )?.value;
-
-
-  const rating =
-    parseInt(
-      document.getElementById(
-        'review-rating'
-      )?.value
-    );
-
-
-  const comment =
-    document.getElementById(
-      'review-comment'
-    )?.value;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from('reviews')
-      .insert([{
-
-        product_id:
-          productId,
-
-        user_id:
-          currentUser.id,
-
-        rating,
-
-        comment
-
-      }]);
-
-
-  if (error) {
-
-    alert(
-      'Error submitting review: ' +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  alert(
-    'Review added!'
-  );
-
-
-  closeModal(
-    'review-modal'
-  );
-
-
-  loadProducts();
-
-}
+window.supabaseClient =
+  supabaseClient;
 
 
 // =========================================================
-// FORM SETUP
+// FINISHED
 // =========================================================
-
-function setupEventListeners() {
-
-  const authForm =
-    document.getElementById(
-      'auth-form'
-    );
-
-  if (authForm) {
-
-    authForm.addEventListener(
-      'submit',
-      handleAuth
-    );
-
-  }
-
-
-  const sellForm =
-    document.getElementById(
-      'sell-form'
-    );
-
-  if (sellForm) {
-
-    sellForm.addEventListener(
-      'submit',
-      handleCreateProduct
-    );
-
-  }
-
-
-  const reviewForm =
-    document.getElementById(
-      'review-form'
-    );
-
-  if (reviewForm) {
-
-    reviewForm.addEventListener(
-      'submit',
-      handleCreateReview
-    );
-
-  }
-
-}
-
-
-// Compatibility for older registration form
-async function handleAuth(event) {
-
-  event.preventDefault();
-
-  const email =
-    document.getElementById(
-      'auth-email'
-    )?.value;
-
-  const password =
-    document.getElementById(
-      'auth-password'
-    )?.value;
-
-  const fullName =
-    document.getElementById(
-      'auth-name'
-    )?.value;
-
-  const gcash =
-    document.getElementById(
-      'auth-gcash'
-    )?.value;
-
-  const isRegister =
-    document.getElementById(
-      'auth-is-register'
-    )?.checked;
-
-
-  if (isRegister) {
-
-    await window.registerUser(
-      email,
-      password,
-      fullName,
-      gcash
-    );
-
-  } else {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signInWithPassword({
-
-          email,
-          password
-
-        });
-
-
-    if (error) {
-
-      alert(
-        'Login Error: ' +
-        error.message
-      );
-
-      return;
-
-    }
-
-
-    currentUser =
-      data?.user || null;
-
-    updateNav();
-
-    window.location.reload();
-
-  }
-
-}
-
-
-// =========================================================
-// SECURITY / HTML ESCAPING
-// =========================================================
-
-function escapeHtml(value) {
-
-  return String(
-    value ?? ''
-  ).replace(
-    /[&<>"']/g,
-    character => ({
-
-      '&':
-        '&amp;',
-
-      '<':
-        '&lt;',
-
-      '>':
-        '&gt;',
-
-      '"':
-        '&quot;',
-
-      "'":
-        '&#39;'
-
-    }[character])
-  );
-
-}
-
-
-// =========================================================
-// START
-// =========================================================
-
-setupEventListeners();
