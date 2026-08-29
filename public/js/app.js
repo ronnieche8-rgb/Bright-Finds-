@@ -543,7 +543,7 @@ window.checkout =
 
       if (modal) {
         modal.style.display =
-          'block';
+          'flex';
       }
 
       return;
