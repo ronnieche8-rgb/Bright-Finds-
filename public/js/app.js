@@ -211,69 +211,99 @@ function updateNav() {
 function setupAuthForm() {
 
   const loginForm =
-    document.getElementById(
-      'login-form'
-    );
+    document.getElementById('login-form');
 
-  if (!loginForm) {
-    return;
-  }
+  const registerForm =
+    document.getElementById('register-form');
 
 
-  loginForm.addEventListener(
-    'submit',
-    async (event) => {
+  // =========================
+  // LOGIN
+  // =========================
 
-      event.preventDefault();
+  if (loginForm) {
 
-      const email =
-        document.getElementById(
-          'login-email'
-        )?.value
-        ?.trim();
+    loginForm.addEventListener(
+      'submit',
+      async (event) => {
 
-      const password =
-        document.getElementById(
-          'login-password'
-        )?.value;
+        event.preventDefault();
 
+        const email =
+          document.getElementById('login-email')
+            ?.value
+            ?.trim();
 
-      if (!email || !password) {
-
-        alert(
-          'Please enter your email and password.'
-        );
-
-        return;
-      }
+        const password =
+          document.getElementById('login-password')
+            ?.value;
 
 
-      const submitButton =
-        loginForm.querySelector(
-          'button[type="submit"]'
-        );
+        if (!email || !password) {
 
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.innerText =
-          'Signing in...';
-      }
+          alert(
+            'Please enter your email and password.'
+          );
+
+          return;
+        }
 
 
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth
-            .signInWithPassword({
-              email,
-              password
-            });
+        const submitButton =
+          loginForm.querySelector(
+            'button[type="submit"]'
+          );
 
 
-        if (error) {
+        if (submitButton) {
+
+          submitButton.disabled = true;
+
+          submitButton.innerText =
+            'Signing in...';
+
+        }
+
+
+        try {
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient.auth
+              .signInWithPassword({
+                email,
+                password
+              });
+
+
+          if (error) {
+
+            alert(
+              'Login failed: ' +
+              error.message
+            );
+
+            return;
+          }
+
+
+          currentUser =
+            data?.user || null;
+
+          updateNav();
+
+
+          closeAuthModal();
+
+          loginForm.reset();
+
+
+          window.location.reload();
+
+
+        } catch (error) {
 
           console.error(
             'Login error:',
@@ -281,67 +311,275 @@ function setupAuthForm() {
           );
 
           alert(
-            'Login failed: ' +
-            error.message
+            'Something went wrong while logging in.'
+          );
+
+        } finally {
+
+          if (submitButton) {
+
+            submitButton.disabled =
+              false;
+
+            submitButton.innerText =
+              'Sign In';
+
+          }
+
+        }
+
+      }
+    );
+
+  }
+
+
+  // =========================
+  // REGISTER
+  // =========================
+
+  if (registerForm) {
+
+    registerForm.addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+
+        const name =
+          document.getElementById(
+            'register-name'
+          )?.value
+          ?.trim();
+
+        const email =
+          document.getElementById(
+            'register-email'
+          )?.value
+          ?.trim();
+
+        const password =
+          document.getElementById(
+            'register-password'
+          )?.value;
+
+        const role =
+          document.getElementById(
+            'register-role'
+          )?.value;
+
+        const gcash =
+          document.getElementById(
+            'register-gcash'
+          )?.value
+          ?.trim();
+
+
+        if (
+          !name ||
+          !email ||
+          !password ||
+          !role ||
+          !gcash
+        ) {
+
+          alert(
+            'Please complete all fields.'
           );
 
           return;
         }
 
 
-        currentUser =
-          data?.user || null;
+        if (password.length < 6) {
 
-        updateNav();
-
-
-        const modal =
-          document.getElementById(
-            'auth-modal'
+          alert(
+            'Password must be at least 6 characters.'
           );
 
-        if (modal) {
-          modal.style.display =
-            'none';
+          return;
         }
 
 
-        // Clear the form
-        loginForm.reset();
+        const submitButton =
+          registerForm.querySelector(
+            'button[type="submit"]'
+          );
 
-
-        // Refresh so all pages/UI
-        // recognize the logged-in account.
-        window.location.reload();
-
-
-      } catch (error) {
-
-        console.error(
-          'Login crash:',
-          error
-        );
-
-        alert(
-          'Something went wrong while logging in.'
-        );
-
-      } finally {
 
         if (submitButton) {
-          submitButton.disabled = false;
+
+          submitButton.disabled =
+            true;
+
           submitButton.innerText =
-            'Sign In';
+            'Creating account...';
+
+        }
+
+
+        try {
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient.auth
+              .signUp({
+
+                email,
+
+                password,
+
+                options: {
+
+                  data: {
+
+                    full_name:
+                      name,
+
+                    role:
+                      role,
+
+                    gcash_number:
+                      gcash
+
+                  }
+
+                }
+
+              });
+
+
+          if (error) {
+
+            console.error(
+              'Registration error:',
+              error
+            );
+
+            alert(
+              'Registration failed: ' +
+              error.message
+            );
+
+            return;
+          }
+
+
+          /*
+           * If email confirmation is enabled,
+           * Supabase may not immediately give
+           * us a logged-in session.
+           */
+
+          if (data?.session) {
+
+            currentUser =
+              data.user;
+
+            alert(
+              'Account created successfully!'
+            );
+
+            closeAuthModal();
+
+            registerForm.reset();
+
+            updateNav();
+
+            window.location.reload();
+
+          } else {
+
+            alert(
+              'Account created! Please check your email to confirm your account before logging in.'
+            );
+
+            showLogin();
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            'Registration crash:',
+            error
+          );
+
+          alert(
+            'Something went wrong while creating your account.'
+          );
+
+        } finally {
+
+          if (submitButton) {
+
+            submitButton.disabled =
+              false;
+
+            submitButton.innerText =
+              'Create Account';
+
+          }
+
         }
 
       }
+    );
 
-    }
-  );
+  }
 
 }
 
+window.showRegister = function () {
 
+  const loginSection =
+    document.getElementById(
+      'login-section'
+    );
+
+  const registerSection =
+    document.getElementById(
+      'register-section'
+    );
+
+  if (loginSection) {
+    loginSection.style.display =
+      'none';
+  }
+
+  if (registerSection) {
+    registerSection.style.display =
+      'block';
+  }
+
+};
+window.showLogin = function () {
+
+  const loginSection =
+    document.getElementById(
+      'login-section'
+    );
+
+  const registerSection =
+    document.getElementById(
+      'register-section'
+    );
+
+  if (registerSection) {
+    registerSection.style.display =
+      'none';
+  }
+
+  if (loginSection) {
+    loginSection.style.display =
+      'block';
+  }
+
+};
 // =========================================================
 // PRODUCTS
 // =========================================================
