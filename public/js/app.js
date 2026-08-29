@@ -194,7 +194,7 @@ function updateNav() {
 
         if (modal) {
           modal.style.display =
-            'block';
+            'flex';
         }
 
       };
