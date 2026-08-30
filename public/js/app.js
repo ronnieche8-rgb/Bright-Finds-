@@ -706,7 +706,8 @@ async function loadProducts() {
       }
     );
 
-
+console.log('STORE PRODUCTS:', products);
+    
     if (error) {
 
       console.error(
