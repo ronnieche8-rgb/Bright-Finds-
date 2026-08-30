@@ -1,292 +1,648 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Seller Dashboard - Bright Finds</title>
 
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- Main Website CSS -->
+  <link
+    rel="stylesheet"
+    href="css/styles.css"
+  >
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
 
   <style>
+
+    /* =====================================================
+       DASHBOARD
+       ===================================================== */
+
     .dashboard {
+
       padding: 4rem 10%;
+
     }
+
 
     .dashboard-header {
+
       margin-bottom: 2rem;
+
     }
+
 
     .dashboard-header h1 {
+
       color: var(--pastel-blue-dark);
+
       margin-bottom: 0.5rem;
+
     }
+
+
+    /* =====================================================
+       STATISTICS
+       ===================================================== */
 
     .dashboard-grid {
+
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(220px, 1fr)
+        );
+
       gap: 1.5rem;
+
       margin-bottom: 3rem;
+
     }
+
 
     .stat-card {
+
       background: var(--white);
+
       padding: 1.5rem;
+
       border-radius: 12px;
+
       box-shadow: var(--shadow);
+
     }
+
 
     .stat-card h3 {
+
       color: var(--pastel-blue-dark);
+
       margin-bottom: 0.5rem;
+
     }
 
+
     .stat-card p {
+
       font-size: 1.8rem;
+
       font-weight: bold;
+
     }
+
+
+    /* =====================================================
+       SECTIONS
+       ===================================================== */
 
     .dashboard-section,
     .sell-section {
+
       background: var(--white);
+
       padding: 2rem;
+
       border-radius: 12px;
+
       box-shadow: var(--shadow);
+
       margin-bottom: 2rem;
+
       overflow-x: auto;
+
     }
+
 
     .dashboard-section h2,
     .sell-section h2 {
+
       color: var(--pastel-blue-dark);
+
       margin-bottom: 1rem;
+
     }
+
 
     .sell-help {
+
       color: #777;
+
       margin-bottom: 1.5rem;
+
     }
+
+
+    /* =====================================================
+       PRODUCT FORM
+       ===================================================== */
 
     .product-form {
+
       display: grid;
+
       gap: 1.2rem;
+
       max-width: 800px;
+
     }
+
 
     .form-group {
+
       display: grid;
+
       gap: 0.5rem;
+
     }
 
+
     .form-group label {
+
       font-weight: 700;
+
       color: var(--pastel-blue-dark);
+
     }
+
 
     .form-group input,
     .form-group textarea {
+
       width: 100%;
+
       box-sizing: border-box;
+
       padding: 0.9rem 1rem;
+
       border: 1px solid #ddd;
+
       border-radius: 8px;
+
       font: inherit;
+
       background: #fff;
+
     }
 
+
     .form-group textarea {
+
       min-height: 130px;
+
       resize: vertical;
+
     }
+
 
     .form-group input:focus,
     .form-group textarea:focus {
+
       outline: 2px solid var(--pastel-yellow);
-      border-color: var(--pastel-blue-dark);
+
+      border-color:
+        var(--pastel-blue-dark);
+
     }
+
+
+    /* =====================================================
+       FILE INPUT
+       ===================================================== */
+
+    .form-group input[type="file"] {
+
+      padding: 0.75rem;
+
+      cursor: pointer;
+
+      background: #fafafa;
+
+    }
+
+
+    .form-group small {
+
+      color: #777;
+
+      font-size: 0.9rem;
+
+    }
+
+
+    /* =====================================================
+       PUBLISH BUTTON
+       ===================================================== */
 
     .publish-btn {
+
       border: 0;
+
       cursor: pointer;
+
       width: fit-content;
+
       margin-top: 0.5rem;
+
     }
+
 
     .publish-btn:disabled {
+
       opacity: 0.6;
+
       cursor: not-allowed;
+
     }
+
+
+    /* =====================================================
+       FORM MESSAGE
+       ===================================================== */
 
     .form-message {
+
       min-height: 24px;
+
       font-weight: 600;
+
     }
+
 
     .form-message.success {
+
       color: #2e7d32;
+
     }
+
 
     .form-message.error {
+
       color: #c62828;
+
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+
+    /* =====================================================
+       IMAGE PREVIEW
+       ===================================================== */
+
+    .product-preview {
+
+      display: none;
+
+      margin-top: 1rem;
+
+      padding: 1rem;
+
+      border-radius: 10px;
+
+      background: #f8fbfd;
+
+      border: 1px solid #e5e5e5;
+
     }
+
+
+    .product-preview img {
+
+      display: block;
+
+      max-width: 250px;
+
+      max-height: 250px;
+
+      object-fit: cover;
+
+      border-radius: 10px;
+
+      margin-top: 0.75rem;
+
+    }
+
+
+    /* =====================================================
+       TABLES
+       ===================================================== */
+
+    table {
+
+      width: 100%;
+
+      border-collapse: collapse;
+
+    }
+
 
     th,
     td {
+
       padding: 1rem;
+
       text-align: left;
+
       border-bottom: 1px solid #eee;
+
     }
+
 
     th {
+
       color: var(--pastel-blue-dark);
+
     }
+
+
+    /* =====================================================
+       STATUS
+       ===================================================== */
 
     .status {
+
       display: inline-block;
+
       padding: 0.35rem 0.75rem;
+
       border-radius: 20px;
+
       font-size: 0.85rem;
+
       font-weight: bold;
+
       text-transform: capitalize;
+
       background: var(--pastel-yellow);
+
     }
+
+
+    /* =====================================================
+       EMPTY MESSAGE
+       ===================================================== */
 
     .empty-message {
+
       color: #777;
+
       padding: 1rem 0;
+
     }
 
-    .product-preview {
-      display: none;
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: 10px;
-      background: #f8fbfd;
-      border: 1px solid #e5e5e5;
-    }
 
-    .product-preview img {
-      max-width: 180px;
-      max-height: 180px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-top: 0.5rem;
-    }
+    /* =====================================================
+       BACK BUTTON
+       ===================================================== */
 
     .back-button {
+
       display: inline-block;
+
       margin-top: 1rem;
+
     }
 
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
     @media (max-width: 700px) {
+
       .dashboard {
+
         padding: 2rem 5%;
+
       }
+
 
       .dashboard-section,
       .sell-section {
+
         padding: 1.25rem;
+
       }
+
 
       th,
       td {
+
         padding: 0.7rem;
+
         font-size: 0.9rem;
+
       }
+
+
+      .product-preview img {
+
+        max-width: 100%;
+
+      }
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
 <header>
+
   <div class="logo-container">
-    <span class="logo-star">★</span>
-    <span class="logo-text">Bright Finds</span>
+
+    <span class="logo-star">
+      ★
+    </span>
+
+    <span class="logo-text">
+      Bright Finds
+    </span>
+
   </div>
 
+
   <nav>
+
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="store.html">Store</a></li>
+
       <li>
-        <button id="logout-btn" class="cta-btn">
+        <a href="index.html">
+          Home
+        </a>
+      </li>
+
+
+      <li>
+        <a href="store.html">
+          Store
+        </a>
+      </li>
+
+
+      <li>
+
+        <button
+          id="logout-btn"
+          class="cta-btn"
+        >
           Logout
         </button>
+
       </li>
+
     </ul>
+
   </nav>
+
 </header>
 
 
+
+<!-- =====================================================
+     MAIN DASHBOARD
+     ===================================================== -->
+
 <main class="dashboard">
 
+
+  <!-- ===================================================
+       DASHBOARD HEADER
+       =================================================== -->
+
   <div class="dashboard-header">
-    <h1>Seller Dashboard</h1>
+
+    <h1>
+      Seller Dashboard
+    </h1>
+
 
     <p id="welcome-message">
       Loading your account...
     </p>
+
   </div>
 
 
-  <!-- ==========================================
+
+  <!-- ===================================================
        STATISTICS
-       ========================================== -->
+       =================================================== -->
 
   <div class="dashboard-grid">
 
-    <div class="stat-card">
-      <h3>My Products</h3>
-      <p id="product-count">0</p>
-    </div>
 
     <div class="stat-card">
-      <h3>Orders</h3>
-      <p id="order-count">0</p>
+
+      <h3>
+        My Products
+      </h3>
+
+      <p id="product-count">
+        0
+      </p>
+
     </div>
 
-    <div class="stat-card">
-      <h3>Items Sold</h3>
-      <p id="items-sold">0</p>
-    </div>
 
     <div class="stat-card">
-      <h3>Total Sales</h3>
-      <p id="total-sales">₱0.00</p>
+
+      <h3>
+        Orders
+      </h3>
+
+      <p id="order-count">
+        0
+      </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <h3>
+        Items Sold
+      </h3>
+
+      <p id="items-sold">
+        0
+      </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <h3>
+        Total Sales
+      </h3>
+
+      <p id="total-sales">
+        ₱0.00
+      </p>
+
     </div>
 
   </div>
 
 
-  <!-- ==========================================
-       SELL YOUR PRODUCT
-       ========================================== -->
+
+  <!-- ===================================================
+       SELL PRODUCT
+       =================================================== -->
 
   <section class="sell-section">
 
-    <h2>🛍️ Sell Your Product</h2>
+
+    <h2>
+      🛍️ Sell Your Product
+    </h2>
+
 
     <p class="sell-help">
-      Add your handmade item or digital artwork and publish it to the Bright Finds store.
+
+      Add your handmade item or digital artwork
+      and publish it to the Bright Finds store.
+
     </p>
 
-    <form id="product-form" class="product-form">
+
+
+    <form
+      id="product-form"
+      class="product-form"
+    >
+
 
       <!-- PRODUCT NAME -->
 
       <div class="form-group">
 
         <label for="product-title">
+
           Product Name
+
         </label>
+
 
         <input
           id="product-title"
@@ -300,13 +656,17 @@
       </div>
 
 
+
       <!-- DESCRIPTION -->
 
       <div class="form-group">
 
         <label for="product-description">
+
           Description
+
         </label>
+
 
         <textarea
           id="product-description"
@@ -319,13 +679,17 @@
       </div>
 
 
+
       <!-- PRICE -->
 
       <div class="form-group">
 
         <label for="product-price">
+
           Price (₱)
+
         </label>
+
 
         <input
           id="product-price"
@@ -340,34 +704,56 @@
       </div>
 
 
-      <!-- IMAGE URL -->
+
+      <!-- =================================================
+           IMAGE UPLOAD
+           ================================================= -->
 
       <div class="form-group">
 
+
         <label for="product-image">
-          Image URL
+
+          Product Image
+
         </label>
+
 
         <input
           id="product-image"
-          name="image_url"
-          type="url"
-          placeholder="https://example.com/my-product.jpg"
+          name="product_image"
+          type="file"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
         >
+
+
+        <small>
+
+          Choose a JPG, PNG, or WEBP image
+          from your computer or phone.
+          Maximum size: 5 MB.
+
+        </small>
+
 
       </div>
 
 
-      <!-- IMAGE PREVIEW -->
+
+      <!-- =================================================
+           IMAGE PREVIEW
+           ================================================= -->
 
       <div
         id="product-preview"
         class="product-preview"
       >
 
-        <strong>Image Preview</strong>
 
-        <br>
+        <strong>
+          Image Preview
+        </strong>
+
 
         <img
           id="preview-image"
@@ -375,18 +761,25 @@
           alt="Product preview"
         >
 
+
       </div>
 
 
-      <!-- PUBLISH BUTTON -->
+
+      <!-- =================================================
+           PUBLISH
+           ================================================= -->
 
       <button
         id="publish-product-btn"
         type="submit"
         class="cta-btn publish-btn"
       >
+
         + Publish Product
+
       </button>
+
 
 
       <!-- MESSAGE -->
@@ -398,935 +791,1533 @@
         aria-live="polite"
       ></div>
 
+
     </form>
 
   </section>
 
 
-  <!-- ==========================================
+
+  <!-- ===================================================
        MY PRODUCTS
-       ========================================== -->
+       =================================================== -->
 
   <section class="dashboard-section">
 
-    <h2>My Products</h2>
+
+    <h2>
+      My Products
+    </h2>
+
 
     <table>
+
 
       <thead>
 
         <tr>
-          <th>Product</th>
-          <th>Price</th>
-          <th>Created</th>
+
+          <th>
+            Product
+          </th>
+
+          <th>
+            Price
+          </th>
+
+          <th>
+            Created
+          </th>
+
         </tr>
 
       </thead>
 
+
       <tbody id="products-table">
+
 
         <tr>
 
           <td colspan="3">
+
             Loading products...
+
           </td>
 
         </tr>
 
+
       </tbody>
 
+
     </table>
+
 
   </section>
 
 
-  <!-- ==========================================
-       MY SALES / ORDERS
-       ========================================== -->
+
+  <!-- ===================================================
+       SALES / ORDERS
+       =================================================== -->
 
   <section class="dashboard-section">
 
-    <h2>My Sales / Orders</h2>
+
+    <h2>
+      My Sales / Orders
+    </h2>
+
 
     <table>
+
 
       <thead>
 
         <tr>
-          <th>Order ID</th>
-          <th>Product</th>
-          <th>Quantity</th>
-          <th>Amount</th>
-          <th>Status</th>
-          <th>Date</th>
+
+          <th>
+            Order ID
+          </th>
+
+          <th>
+            Product
+          </th>
+
+          <th>
+            Quantity
+          </th>
+
+          <th>
+            Amount
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th>
+            Date
+          </th>
+
         </tr>
 
       </thead>
 
+
       <tbody id="sales-table">
+
 
         <tr>
 
           <td colspan="6">
+
             Loading sales...
+
           </td>
 
         </tr>
 
+
       </tbody>
 
+
     </table>
+
 
   </section>
 
 
-  <!-- ==========================================
+
+  <!-- ===================================================
        BACK TO STORE
-       ========================================== -->
+       =================================================== -->
 
   <a
     href="store.html"
     class="cta-btn back-button"
   >
+
     Back to Store
+
   </a>
+
 
 </main>
 
 
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
 <script>
 
-  // =========================================================
-  // SUPABASE CONFIGURATION
-  // =========================================================
 
-  const SUPABASE_URL =
-    'https://qdslzrbnblvyxskicdvm.supabase.co';
+// =========================================================
+// SUPABASE CONFIGURATION
+// =========================================================
 
-  const SUPABASE_ANON_KEY =
-    'sb_publishable_kDlVEfvz_vZOkUdyn--n3w_0ZL3JrI5';
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+const SUPABASE_URL =
+  'https://qdslzrbnblvyxskicdvm.supabase.co';
 
 
-  // =========================================================
-  // IMAGE PREVIEW
-  // =========================================================
-
-  const imageInput =
-    document.getElementById('product-image');
-
-  const imagePreview =
-    document.getElementById('product-preview');
-
-  const previewImage =
-    document.getElementById('preview-image');
+const SUPABASE_ANON_KEY =
+  'sb_publishable_kDlVEfvz_vZOkUdyn--n3w_0ZL3JrI5';
 
 
-  imageInput.addEventListener(
-    'input',
-    function () {
-
-      const url =
-        this.value.trim();
-
-      if (!url) {
-
-        imagePreview.style.display =
-          'none';
-
-        previewImage.src =
-          '';
-
-        return;
-
-      }
-
-      previewImage.src =
-        url;
-
-      imagePreview.style.display =
-        'block';
-
-    }
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
   );
 
 
-  previewImage.addEventListener(
-    'error',
-    function () {
+
+// =========================================================
+// IMAGE ELEMENTS
+// =========================================================
+
+const imageInput =
+  document.getElementById(
+    'product-image'
+  );
+
+
+const imagePreview =
+  document.getElementById(
+    'product-preview'
+  );
+
+
+const previewImage =
+  document.getElementById(
+    'preview-image'
+  );
+
+
+
+// =========================================================
+// IMAGE PREVIEW
+// =========================================================
+
+imageInput.addEventListener(
+  'change',
+  function () {
+
+
+    const file =
+      this.files[0];
+
+
+    // No image selected
+
+    if (!file) {
 
       imagePreview.style.display =
         'none';
 
+      previewImage.src =
+        '';
+
+      return;
+
     }
-  );
 
 
-  // =========================================================
-  // PUBLISH PRODUCT
-  // =========================================================
 
-  document
-    .getElementById('product-form')
-    .addEventListener(
-      'submit',
-      async function (event) {
+    // -----------------------------------------------------
+    // CHECK FILE TYPE
+    // -----------------------------------------------------
 
-        event.preventDefault();
+    const allowedTypes = [
 
-        const message =
-          document.getElementById(
-            'product-form-message'
-          );
+      'image/jpeg',
 
-        const button =
-          document.getElementById(
-            'publish-product-btn'
-          );
+      'image/jpg',
 
+      'image/png',
 
-        message.textContent =
-          '';
+      'image/webp'
 
-        message.className =
-          'form-message';
+    ];
 
 
-        button.disabled =
-          true;
+    if (
+      !allowedTypes.includes(
+        file.type
+      )
+    ) {
 
-        button.textContent =
-          'Publishing...';
 
+      alert(
+        'Please choose a JPG, PNG, or WEBP image.'
+      );
 
-        try {
 
-          // ---------------------------------------------------
-          // GET CURRENT LOGIN SESSION
-          // ---------------------------------------------------
+      this.value =
+        '';
 
-          const {
-            data: {
-              session
-            },
-            error: sessionError
-          } =
-            await supabaseClient.auth.getSession();
 
+      imagePreview.style.display =
+        'none';
 
-          if (sessionError) {
 
-            throw sessionError;
+      previewImage.src =
+        '';
 
-          }
 
+      return;
 
-          if (!session?.user) {
+    }
 
-            message.textContent =
-              'You are not logged in. Please log in again.';
 
-            message.className =
-              'form-message error';
 
-            setTimeout(
-              function () {
+    // -----------------------------------------------------
+    // CHECK FILE SIZE
+    // -----------------------------------------------------
 
-                window.location.href =
-                  'index.html';
+    const maxFileSize =
+      5 * 1024 * 1024;
 
-              },
-              1500
-            );
 
-            return;
+    if (
+      file.size > maxFileSize
+    ) {
 
-          }
 
+      alert(
+        'Image must be smaller than 5 MB.'
+      );
 
-          // ---------------------------------------------------
-          // GET FORM VALUES
-          // ---------------------------------------------------
 
-          const title =
-            document
-              .getElementById('product-title')
-              .value
-              .trim();
+      this.value =
+        '';
 
 
-          const description =
-            document
-              .getElementById('product-description')
-              .value
-              .trim();
+      imagePreview.style.display =
+        'none';
 
 
-          const price =
-            Number(
-              document
-                .getElementById('product-price')
-                .value
-            );
+      previewImage.src =
+        '';
 
 
-          const imageUrl =
-            document
-              .getElementById('product-image')
-              .value
-              .trim();
+      return;
 
+    }
 
-          // ---------------------------------------------------
-          // VALIDATE
-          // ---------------------------------------------------
 
-          if (!title) {
 
-            throw new Error(
-              'Please enter a product name.'
-            );
+    // -----------------------------------------------------
+    // CREATE PREVIEW
+    // -----------------------------------------------------
 
-          }
+    const previewURL =
+      URL.createObjectURL(
+        file
+      );
 
 
-          if (!description) {
+    previewImage.src =
+      previewURL;
 
-            throw new Error(
-              'Please enter a product description.'
-            );
 
-          }
+    imagePreview.style.display =
+      'block';
 
+  }
+);
 
-          if (
-            !Number.isFinite(price) ||
-            price <= 0
-          ) {
 
-            throw new Error(
-              'Please enter a valid price.'
-            );
 
-          }
+// =========================================================
+// PUBLISH PRODUCT
+// =========================================================
 
+document
+  .getElementById(
+    'product-form'
+  )
+  .addEventListener(
+    'submit',
+    async function (event) {
 
-          if (imageUrl) {
 
-            try {
+      event.preventDefault();
 
-              new URL(imageUrl);
 
-            } catch {
 
-              throw new Error(
-                'Please enter a valid image URL or leave it blank.'
-              );
+      const message =
+        document.getElementById(
+          'product-form-message'
+        );
 
-            }
 
-          }
+      const button =
+        document.getElementById(
+          'publish-product-btn'
+        );
 
 
-          // ---------------------------------------------------
-          // CREATE PRODUCT
-          // ---------------------------------------------------
 
-          const product = {
+      message.textContent =
+        '';
 
-            id:
-              crypto.randomUUID(),
 
-            seller_id:
-              session.user.id,
+      message.className =
+        'form-message';
 
-            title:
-              title,
 
-            description:
-              description,
 
-            price:
-              price,
+      button.disabled =
+        true;
 
-            image_url:
-              imageUrl || null,
 
-            created_at:
-              new Date().toISOString()
+      button.textContent =
+        'Publishing...';
 
-          };
 
 
-          console.log(
-            'Product being submitted:',
-            product
-          );
+      try {
 
 
-          // ---------------------------------------------------
-          // INSERT INTO SUPABASE
-          // ---------------------------------------------------
+        // =================================================
+        // GET CURRENT LOGIN SESSION
+        // =================================================
 
-          const {
-            error
-          } =
-            await supabaseClient
-              .from('products')
-              .insert(product);
+        const {
+          data: {
+            session
+          },
+          error: sessionError
+        } =
+          await supabaseClient
+            .auth
+            .getSession();
 
 
-          if (error) {
 
-            console.error(
-              'Supabase insert error:',
-              error
-            );
+        if (sessionError) {
 
-            throw error;
+          throw sessionError;
 
-          }
+        }
 
 
-          // ---------------------------------------------------
-          // SUCCESS
-          // ---------------------------------------------------
 
-          message.textContent =
-            'Product published successfully! 🎉';
-
-          message.className =
-            'form-message success';
-
-
-          document
-            .getElementById('product-form')
-            .reset();
-
-
-          imagePreview.style.display =
-            'none';
-
-          previewImage.src =
-            '';
-
-
-          // Reload dashboard
-
-          await loadDashboard();
-
-
-        } catch (error) {
-
-          console.error(
-            'Publish product error:',
-            error
-          );
+        if (!session?.user) {
 
 
           message.textContent =
-            error?.message ||
-            'Unable to publish the product. Please try again.';
+            'You are not logged in. Please log in again.';
 
 
           message.className =
             'form-message error';
 
 
-        } finally {
 
-          button.disabled =
-            false;
+          setTimeout(
+            function () {
 
-          button.textContent =
-            '+ Publish Product';
+              window.location.href =
+                'index.html';
 
-        }
-
-      }
-    );
-
-
-  // =========================================================
-  // LOAD DASHBOARD
-  // =========================================================
-
-  async function loadDashboard() {
-
-    try {
-
-      // -------------------------------------------------------
-      // CHECK LOGIN
-      // -------------------------------------------------------
-
-      const {
-        data: {
-          session
-        }
-      } =
-        await supabaseClient.auth.getSession();
-
-
-      if (!session?.user) {
-
-        window.location.href =
-          'index.html';
-
-        return;
-
-      }
-
-
-      const user =
-        session.user;
-
-
-      // -------------------------------------------------------
-      // WELCOME MESSAGE
-      // -------------------------------------------------------
-
-      document.getElementById(
-        'welcome-message'
-      ).textContent =
-        `Welcome, ${
-          user.user_metadata?.full_name ||
-          user.email
-        }!`;
-
-
-      // =======================================================
-      // LOAD PRODUCTS
-      // =======================================================
-
-      const {
-        data: products,
-        error: productsError
-      } =
-        await supabaseClient
-          .from('products')
-          .select(
-            'id,title,price,created_at'
-          )
-          .eq(
-            'seller_id',
-            user.id
-          )
-          .order(
-            'created_at',
-            {
-              ascending: false
-            }
+            },
+            1500
           );
 
 
-      if (productsError) {
+          return;
 
-        throw productsError;
-
-      }
+        }
 
 
-      // Product count
 
-      document.getElementById(
-        'product-count'
-      ).textContent =
-        products?.length || 0;
+        // =================================================
+        // GET FORM VALUES
+        // =================================================
+
+        const title =
+          document
+            .getElementById(
+              'product-title'
+            )
+            .value
+            .trim();
 
 
-      const productsTable =
-        document.getElementById(
-          'products-table'
+
+        const description =
+          document
+            .getElementById(
+              'product-description'
+            )
+            .value
+            .trim();
+
+
+
+        const price =
+          Number(
+            document
+              .getElementById(
+                'product-price'
+              )
+              .value
+          );
+
+
+
+        // =================================================
+        // GET IMAGE FILE
+        // =================================================
+
+        const imageFile =
+          document
+            .getElementById(
+              'product-image'
+            )
+            .files[0];
+
+
+
+        // =================================================
+        // VALIDATE PRODUCT NAME
+        // =================================================
+
+        if (!title) {
+
+          throw new Error(
+            'Please enter a product name.'
+          );
+
+        }
+
+
+
+        // =================================================
+        // VALIDATE DESCRIPTION
+        // =================================================
+
+        if (!description) {
+
+          throw new Error(
+            'Please enter a product description.'
+          );
+
+        }
+
+
+
+        // =================================================
+        // VALIDATE PRICE
+        // =================================================
+
+        if (
+          !Number.isFinite(price) ||
+          price <= 0
+        ) {
+
+          throw new Error(
+            'Please enter a valid price.'
+          );
+
+        }
+
+
+
+        // =================================================
+        // IMAGE URL
+        // =================================================
+
+        let imageUrl =
+          null;
+
+
+
+        // =================================================
+        // UPLOAD IMAGE
+        // =================================================
+
+        if (imageFile) {
+
+
+          message.textContent =
+            'Uploading product image...';
+
+
+          message.className =
+            'form-message';
+
+
+
+          // -------------------------------------------------
+          // GET FILE EXTENSION
+          // -------------------------------------------------
+
+          const fileExtension =
+            imageFile.name
+              .split('.')
+              .pop()
+              .toLowerCase();
+
+
+
+          // -------------------------------------------------
+          // CREATE UNIQUE FILE NAME
+          // -------------------------------------------------
+
+          const fileName =
+            `${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+
+
+
+          console.log(
+            'Uploading image:',
+            fileName
+          );
+
+
+
+          // -------------------------------------------------
+          // UPLOAD TO STORAGE
+          // -------------------------------------------------
+
+          const {
+            error: uploadError
+          } =
+            await supabaseClient
+              .storage
+              .from(
+                'product-images'
+              )
+              .upload(
+                fileName,
+                imageFile,
+                {
+
+                  cacheControl:
+                    '3600',
+
+                  upsert:
+                    false,
+
+                  contentType:
+                    imageFile.type
+
+                }
+              );
+
+
+
+          // -------------------------------------------------
+          // CHECK UPLOAD ERROR
+          // -------------------------------------------------
+
+          if (uploadError) {
+
+
+            console.error(
+              'Image upload error:',
+              uploadError
+            );
+
+
+            throw new Error(
+              'Image upload failed: ' +
+              uploadError.message
+            );
+
+          }
+
+
+
+          // -------------------------------------------------
+          // GET PUBLIC IMAGE URL
+          // -------------------------------------------------
+
+          const {
+            data: publicUrlData
+          } =
+            supabaseClient
+              .storage
+              .from(
+                'product-images'
+              )
+              .getPublicUrl(
+                fileName
+              );
+
+
+
+          imageUrl =
+            publicUrlData.publicUrl;
+
+
+
+          console.log(
+            'Image URL:',
+            imageUrl
+          );
+
+        }
+
+
+
+        // =================================================
+        // CREATE PRODUCT OBJECT
+        // =================================================
+
+        const product = {
+
+
+          id:
+            crypto.randomUUID(),
+
+
+          seller_id:
+            session.user.id,
+
+
+          title:
+            title,
+
+
+          description:
+            description,
+
+
+          price:
+            price,
+
+
+          image_url:
+            imageUrl,
+
+
+          created_at:
+            new Date().toISOString()
+
+
+        };
+
+
+
+        console.log(
+          'Product being submitted:',
+          product
         );
 
 
-      // No products
 
-      if (!products?.length) {
+        // =================================================
+        // INSERT PRODUCT INTO DATABASE
+        // =================================================
 
-        productsTable.innerHTML = `
-          <tr>
-            <td colspan="3" class="empty-message">
-              You haven't listed any products yet.
-            </td>
-          </tr>
-        `;
-
-      }
+        message.textContent =
+          'Saving product...';
 
 
-      // Products found
 
-      else {
-
-        productsTable.innerHTML =
-          products
-            .map(
-              function (product) {
-
-                return `
-
-                  <tr>
-
-                    <td>
-                      ${escapeHTML(
-                        product.title ||
-                        'Untitled Product'
-                      )}
-                    </td>
-
-                    <td>
-                      ₱${Number(
-                        product.price || 0
-                      ).toFixed(2)}
-                    </td>
-
-                    <td>
-                      ${formatDate(
-                        product.created_at
-                      )}
-                    </td>
-
-                  </tr>
-
-                `;
-
-              }
+        const {
+          error: insertError
+        } =
+          await supabaseClient
+            .from(
+              'products'
             )
-            .join('');
+            .insert(
+              product
+            );
 
-      }
 
 
-      // =======================================================
-      // LOAD SALES
-      // =======================================================
+        // =================================================
+        // CHECK DATABASE ERROR
+        // =================================================
 
-      const {
-        data: sales,
-        error: salesError
-      } =
-        await supabaseClient
-          .from('order_items')
-          .select(`
-            id,
-            order_id,
-            product_id,
-            price,
-            quantity,
-            seller_id,
-            products (
-              title
-            ),
-            orders (
-              status,
-              created_at
-            )
-          `)
-          .eq(
-            'seller_id',
-            user.id
-          )
-          .order(
-            'id',
-            {
-              ascending: false
-            }
+        if (insertError) {
+
+
+          console.error(
+            'Supabase insert error:',
+            insertError
           );
 
 
-      if (salesError) {
+          throw new Error(
+            'Product could not be saved: ' +
+            insertError.message
+          );
 
-        throw salesError;
+        }
+
+
+
+        // =================================================
+        // SUCCESS
+        // =================================================
+
+        message.textContent =
+          'Product published successfully! 🎉';
+
+
+        message.className =
+          'form-message success';
+
+
+
+        // =================================================
+        // RESET FORM
+        // =================================================
+
+        document
+          .getElementById(
+            'product-form'
+          )
+          .reset();
+
+
+
+        // Hide preview
+
+        imagePreview.style.display =
+          'none';
+
+
+        previewImage.src =
+          '';
+
+
+
+        // =================================================
+        // RELOAD DASHBOARD
+        // =================================================
+
+        await loadDashboard();
+
+
+      }
+
+      catch (error) {
+
+
+        console.error(
+          'Publish product error:',
+          error
+        );
+
+
+
+        message.textContent =
+          error?.message ||
+          'Unable to publish the product. Please try again.';
+
+
+        message.className =
+          'form-message error';
 
       }
 
 
-      // -------------------------------------------------------
-      // ORDER COUNT
-      // -------------------------------------------------------
+      finally {
 
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          '+ Publish Product';
+
+      }
+
+    }
+  );
+
+
+
+// =========================================================
+// LOAD DASHBOARD
+// =========================================================
+
+async function loadDashboard() {
+
+
+  try {
+
+
+    // =======================================================
+    // CHECK LOGIN
+    // =======================================================
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+
+    if (!session?.user) {
+
+
+      window.location.href =
+        'index.html';
+
+
+      return;
+
+    }
+
+
+
+    const user =
+      session.user;
+
+
+
+    // =======================================================
+    // WELCOME MESSAGE
+    // =======================================================
+
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email ||
+      'Seller';
+
+
+
+    document.getElementById(
+      'welcome-message'
+    ).textContent =
+      `Welcome, ${displayName}!`;
+
+
+
+    // =======================================================
+    // LOAD PRODUCTS
+    // =======================================================
+
+    const {
+      data: products,
+      error: productsError
+    } =
+      await supabaseClient
+        .from(
+          'products'
+        )
+        .select(
+          'id,title,price,created_at'
+        )
+        .eq(
+          'seller_id',
+          user.id
+        )
+        .order(
+          'created_at',
+          {
+            ascending:
+              false
+          }
+        );
+
+
+
+    if (productsError) {
+
+      throw productsError;
+
+    }
+
+
+
+    // =======================================================
+    // PRODUCT COUNT
+    // =======================================================
+
+    document.getElementById(
+      'product-count'
+    ).textContent =
+      products?.length || 0;
+
+
+
+    // =======================================================
+    // PRODUCTS TABLE
+    // =======================================================
+
+    const productsTable =
       document.getElementById(
-        'order-count'
-      ).textContent =
-
-        new Set(
-          (sales || [])
-            .map(
-              sale =>
-                sale.order_id
-            )
-        ).size;
+        'products-table'
+      );
 
 
-      // -------------------------------------------------------
-      // ITEMS SOLD
-      // -------------------------------------------------------
 
-      const totalItems =
+    if (!products?.length) {
+
+
+      productsTable.innerHTML = `
+
+        <tr>
+
+          <td
+            colspan="3"
+            class="empty-message"
+          >
+
+            You haven't listed any products yet.
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+
+    else {
+
+
+      productsTable.innerHTML =
+
+        products
+          .map(
+            function (product) {
+
+
+              return `
+
+                <tr>
+
+                  <td>
+
+                    ${escapeHTML(
+                      product.title ||
+                      'Untitled Product'
+                    )}
+
+                  </td>
+
+
+                  <td>
+
+                    ₱${Number(
+                      product.price || 0
+                    ).toFixed(2)}
+
+                  </td>
+
+
+                  <td>
+
+                    ${formatDate(
+                      product.created_at
+                    )}
+
+                  </td>
+
+                </tr>
+
+              `;
+
+            }
+          )
+          .join('');
+
+    }
+
+
+
+    // =======================================================
+    // LOAD SALES
+    // =======================================================
+
+    const {
+      data: sales,
+      error: salesError
+    } =
+      await supabaseClient
+        .from(
+          'order_items'
+        )
+        .select(`
+
+          id,
+
+          order_id,
+
+          product_id,
+
+          price,
+
+          quantity,
+
+          seller_id,
+
+          products (
+
+            title
+
+          ),
+
+          orders (
+
+            status,
+
+            created_at
+
+          )
+
+        `)
+        .eq(
+          'seller_id',
+          user.id
+        )
+        .order(
+          'id',
+          {
+            ascending:
+              false
+          }
+        );
+
+
+
+    if (salesError) {
+
+      throw salesError;
+
+    }
+
+
+
+    // =======================================================
+    // ORDER COUNT
+    // =======================================================
+
+    const uniqueOrders =
+      new Set(
         (sales || [])
-          .reduce(
-            function (sum, sale) {
+          .map(
+            sale =>
+              sale.order_id
+          )
+      );
 
-              return sum +
+
+
+    document.getElementById(
+      'order-count'
+    ).textContent =
+      uniqueOrders.size;
+
+
+
+    // =======================================================
+    // ITEMS SOLD
+    // =======================================================
+
+    const totalItems =
+      (sales || [])
+        .reduce(
+          function (
+            sum,
+            sale
+          ) {
+
+
+            return (
+              sum +
+              Number(
+                sale.quantity || 0
+              )
+            );
+
+          },
+          0
+        );
+
+
+
+    document.getElementById(
+      'items-sold'
+    ).textContent =
+      totalItems;
+
+
+
+    // =======================================================
+    // TOTAL SALES
+    // =======================================================
+
+    const totalSales =
+      (sales || [])
+        .filter(
+          function (sale) {
+
+
+            return (
+              sale.orders?.status ===
+              'paid'
+            );
+
+          }
+        )
+        .reduce(
+          function (
+            sum,
+            sale
+          ) {
+
+
+            return (
+
+              sum +
+
+              (
+                Number(
+                  sale.price || 0
+                ) *
+
+                Number(
+                  sale.quantity || 0
+                )
+              )
+
+            );
+
+          },
+          0
+        );
+
+
+
+    document.getElementById(
+      'total-sales'
+    ).textContent =
+      `₱${totalSales.toFixed(2)}`;
+
+
+
+    // =======================================================
+    // SALES TABLE
+    // =======================================================
+
+    const salesTable =
+      document.getElementById(
+        'sales-table'
+      );
+
+
+
+    if (!sales?.length) {
+
+
+      salesTable.innerHTML = `
+
+        <tr>
+
+          <td
+            colspan="6"
+            class="empty-message"
+          >
+
+            No sales recorded yet.
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+
+    else {
+
+
+      salesTable.innerHTML =
+
+        sales
+          .map(
+            function (sale) {
+
+
+              const productName =
+                sale.products?.title ||
+                'Unknown Product';
+
+
+
+              const status =
+                sale.orders?.status ||
+                'pending';
+
+
+
+              const amount =
+                Number(
+                  sale.price || 0
+                ) *
+
                 Number(
                   sale.quantity || 0
                 );
 
-            },
-            0
-          );
 
 
-      document.getElementById(
-        'items-sold'
-      ).textContent =
-        totalItems;
+              const orderId =
+                String(
+                  sale.order_id || ''
+                );
 
 
-      // -------------------------------------------------------
-      // TOTAL SALES
-      // -------------------------------------------------------
 
-      const totalSales =
-        (sales || [])
-          .filter(
-            function (sale) {
+              return `
 
-              return sale.orders?.status ===
-                'paid';
+                <tr>
+
+
+                  <td>
+
+                    ${escapeHTML(
+                      orderId.substring(
+                        0,
+                        8
+                      )
+                    )}...
+
+                  </td>
+
+
+                  <td>
+
+                    ${escapeHTML(
+                      productName
+                    )}
+
+                  </td>
+
+
+                  <td>
+
+                    ${Number(
+                      sale.quantity || 0
+                    )}
+
+                  </td>
+
+
+                  <td>
+
+                    ₱${amount.toFixed(2)}
+
+                  </td>
+
+
+                  <td>
+
+                    <span class="status">
+
+                      ${escapeHTML(
+                        status
+                      )}
+
+                    </span>
+
+                  </td>
+
+
+                  <td>
+
+                    ${formatDate(
+                      sale.orders?.created_at
+                    )}
+
+                  </td>
+
+
+                </tr>
+
+              `;
 
             }
           )
-          .reduce(
-            function (sum, sale) {
-
-              return sum +
-                (
-                  Number(
-                    sale.price || 0
-                  ) *
-                  Number(
-                    sale.quantity || 0
-                  )
-                );
-
-            },
-            0
-          );
-
-
-      document.getElementById(
-        'total-sales'
-      ).textContent =
-        `₱${totalSales.toFixed(2)}`;
-
-
-      // =======================================================
-      // SALES TABLE
-      // =======================================================
-
-      const salesTable =
-        document.getElementById(
-          'sales-table'
-        );
-
-
-      if (!sales?.length) {
-
-        salesTable.innerHTML = `
-          <tr>
-            <td colspan="6" class="empty-message">
-              No sales recorded yet.
-            </td>
-          </tr>
-        `;
-
-      }
-
-
-      else {
-
-        salesTable.innerHTML =
-          sales
-            .map(
-              function (sale) {
-
-                const productName =
-                  sale.products?.title ||
-                  'Unknown Product';
-
-
-                const status =
-                  sale.orders?.status ||
-                  'pending';
-
-
-                const amount =
-                  Number(
-                    sale.price || 0
-                  ) *
-                  Number(
-                    sale.quantity || 0
-                  );
-
-
-                return `
-
-                  <tr>
-
-                    <td>
-                      ${String(
-                        sale.order_id
-                      ).substring(
-                        0,
-                        8
-                      )}...
-                    </td>
-
-                    <td>
-                      ${escapeHTML(
-                        productName
-                      )}
-                    </td>
-
-                    <td>
-                      ${sale.quantity}
-                    </td>
-
-                    <td>
-                      ₱${amount.toFixed(2)}
-                    </td>
-
-                    <td>
-
-                      <span class="status">
-                        ${escapeHTML(
-                          status
-                        )}
-                      </span>
-
-                    </td>
-
-                    <td>
-                      ${formatDate(
-                        sale.orders?.created_at
-                      )}
-                    </td>
-
-                  </tr>
-
-                `;
-
-              }
-            )
-            .join('');
-
-      }
-
-
-    } catch (error) {
-
-      console.error(
-        'Dashboard error:',
-        error
-      );
-
-
-      document.getElementById(
-        'welcome-message'
-      ).textContent =
-        'Unable to load dashboard data.';
-
-
-      // Don't hide the Sell Your Product form
-      // even if the sales table has an error.
+          .join('');
 
     }
 
+
   }
 
+  catch (error) {
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
 
-  document
-    .getElementById('logout-btn')
-    .addEventListener(
-      'click',
-      async function () {
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-          'index.html';
-
-      }
+    console.error(
+      'Dashboard error:',
+      error
     );
 
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
 
-  function formatDate(date) {
+    document.getElementById(
+      'welcome-message'
+    ).textContent =
+      'Unable to load dashboard data.';
 
-    if (!date) {
 
-      return '—';
+
+    // Keep product form available
+
+  }
+
+}
+
+
+
+// =========================================================
+// LOGOUT
+// =========================================================
+
+document
+  .getElementById(
+    'logout-btn'
+  )
+  .addEventListener(
+    'click',
+    async function () {
+
+
+      try {
+
+
+        await supabaseClient
+          .auth
+          .signOut();
+
+
+      }
+
+      catch (error) {
+
+
+        console.error(
+          'Logout error:',
+          error
+        );
+
+      }
+
+
+      window.location.href =
+        'index.html';
 
     }
+  );
 
 
-    return new Date(
-      date
-    ).toLocaleDateString();
+
+// =========================================================
+// FORMAT DATE
+// =========================================================
+
+function formatDate(
+  date
+) {
+
+
+  if (!date) {
+
+    return '—';
 
   }
 
 
-  function escapeHTML(value) {
 
-    return String(
-      value ?? ''
+  const parsedDate =
+    new Date(date);
+
+
+
+  if (
+    Number.isNaN(
+      parsedDate.getTime()
     )
-      .replace(
-        /&/g,
-        '&amp;'
-      )
-      .replace(
-        /</g,
-        '&lt;'
-      )
-      .replace(
-        />/g,
-        '&gt;'
-      )
-      .replace(
-        /"/g,
-        '&quot;'
-      )
-      .replace(
-        /'/g,
-        '&#039;'
-      );
+  ) {
+
+    return '—';
 
   }
 
 
-  // =========================================================
-  // START DASHBOARD
-  // =========================================================
 
-  loadDashboard();
+  return parsedDate.toLocaleDateString();
+
+}
+
+
+
+// =========================================================
+// ESCAPE HTML
+// =========================================================
+
+function escapeHTML(
+  value
+) {
+
+
+  return String(
+    value ?? ''
+  )
+
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+
+    .replace(
+      /</g,
+      '&lt;'
+    )
+
+    .replace(
+      />/g,
+      '&gt;'
+    )
+
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
+
+
+
+// =========================================================
+// START DASHBOARD
+// =========================================================
+
+loadDashboard();
+
 
 </script>
 
+
 </body>
+
 </html>
