@@ -692,20 +692,19 @@ async function loadProducts() {
 
   try {
 
-    const {
-      data: products,
-      error
-    } =
-      await supabaseClient
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order(
-          'created_at',
-          {
-            ascending: false
-          }
-        );
+   const {
+  data: products,
+  error
+} =
+  await supabaseClient
+    .from('products')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending: false
+      }
+    );
 
 
     if (error) {
