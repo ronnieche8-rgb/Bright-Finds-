@@ -466,7 +466,38 @@ function setupAuthForm() {
 
             return;
           }
+// =====================================================
+// CREATE PROFILE ROW
+// =====================================================
 
+if (data?.user) {
+
+  const { error: profileError } =
+    await supabaseClient
+      .from('profiles')
+      .insert({
+        id: data.user.id,
+        full_name: name,
+        role: role,
+        gcash_number: gcash
+      });
+
+  if (profileError) {
+
+    console.error(
+      'Profile creation error:',
+      profileError
+    );
+
+    alert(
+      'Account was created, but your profile could not be created: ' +
+      profileError.message
+    );
+
+    return;
+  }
+
+}
 
           /*
            * If email confirmation is enabled,
