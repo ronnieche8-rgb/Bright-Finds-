@@ -290,12 +290,75 @@ function setupAuthForm() {
 
 
           currentUser =
-            data?.user || null;
-
-          updateNav();
+  data?.user || null;
 
 
-          closeAuthModal();
+// =====================================================
+// CREATE PROFILE IF IT DOESN'T EXIST
+// =====================================================
+
+if (currentUser) {
+
+  const {
+    data: existingProfile,
+    error: profileCheckError
+  } =
+    await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+
+  if (profileCheckError) {
+
+    console.error(
+      'Profile check error:',
+      profileCheckError
+    );
+
+  }
+
+  if (!existingProfile) {
+
+    const {
+      error: profileError
+    } =
+      await supabaseClient
+        .from('profiles')
+        .insert({
+          id: currentUser.id,
+          full_name:
+            currentUser.user_metadata?.full_name || '',
+          role:
+            currentUser.user_metadata?.role || 'buyer',
+          gcash_number:
+            currentUser.user_metadata?.gcash_number || ''
+        });
+
+    if (profileError) {
+
+      console.error(
+        'Profile creation error:',
+        profileError
+      );
+
+      alert(
+        'Logged in, but your profile could not be created: ' +
+        profileError.message
+      );
+
+      return;
+
+    }
+
+  }
+
+}
+
+
+updateNav();
+
+closeAuthModal();
 
           loginForm.reset();
 
