@@ -26,7 +26,7 @@
   <script src="js/app.js"></script>
   <script>
     async function loadProducts() {
-      const { data: products } = await supabase.from('products').select('*');
+      const { data: products } = await supabaseClient.from('products').select('*');
       const list = document.getElementById('product-list');
       list.innerHTML = products.map(p => `
         <div class="card">
