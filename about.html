@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About Us | Bright Finds</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7fbff;
+            color: #17324d;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5eef7;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1261a0;
+        }
+
+        .logo span {
+            color: #f5c542;
+        }
+
+        nav {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #17324d;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #1261a0;
+        }
+
+        .login-btn {
+            background: #1261a0;
+            color: white !important;
+            padding: 10px 18px;
+            border-radius: 8px;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #eaf6ff, #fff9df);
+            text-align: center;
+            padding: 75px 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: #1261a0;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: auto;
+            color: #52697d;
+            font-size: 18px;
+        }
+
+        /* ABOUT */
+        .about-section {
+            width: 86%;
+            max-width: 1100px;
+            margin: 60px auto;
+        }
+
+        .about-card {
+            background: white;
+            padding: 45px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(31, 79, 120, 0.08);
+            margin-bottom: 35px;
+        }
+
+        .about-card h2 {
+            color: #1261a0;
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .about-card p {
+            color: #60778b;
+            margin-bottom: 15px;
+        }
+
+        /* FEATURES */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .feature {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(31, 79, 120, 0.07);
+            border-top: 4px solid #f5c542;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            color: #1261a0;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #60778b;
+        }
+
+        /* CTA */
+        .cta {
+            width: 86%;
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            background: #1261a0;
+            color: white;
+        }
+
+        .cta h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .cta p {
+            color: #e1eef8;
+            margin-bottom: 25px;
+        }
+
+        .cta a {
+            display: inline-block;
+            background: #f5c542;
+            color: #17324d;
+            padding: 13px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .cta a:hover {
+            background: #ffd95c;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #123b5d;
+            color: white;
+            padding: 40px 7%;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .footer-brand span {
+            color: #f5c542;
+        }
+
+        .footer-brand p {
+            max-width: 400px;
+            color: #d7e6f2;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #f5c542;
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: #c5d7e5;
+            font-size: 14px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 800px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .about-section {
+                width: 92%;
+            }
+
+            .cta {
+                width: 92%;
+                padding: 35px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <a href="index.html" class="logo">
+        Bright<span>Finds</span>
+    </a>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html" class="active">About Us</a>
+        <a href="contact.html">Contacts</a>
+        <a href="store.html">Store Page</a>
+        <a href="login.html" class="login-btn">Login</a>
+    </nav>
+
+</header>
+
+
+<section class="hero">
+
+    <h1>About Bright Finds</h1>
+
+    <p>
+        A creative marketplace where handmade products and
+        digital artwork come together.
+    </p>
+
+</section>
+
+
+<section class="about-section">
+
+    <div class="about-card">
+
+        <h2>Who We Are</h2>
+
+        <p>
+            Bright Finds is an online marketplace created to connect
+            creative sellers with customers looking for unique,
+            handmade, and digital products.
+        </p>
+
+        <p>
+            Our goal is to give small creators and independent sellers
+            a place where they can showcase their work while giving
+            buyers an easy and enjoyable shopping experience.
+        </p>
+
+    </div>
+
+
+    <div class="about-card">
+
+        <h2>Our Mission</h2>
+
+        <p>
+            Our mission is to make creative products easier to discover
+            while supporting independent creators and small businesses.
+        </p>
+
+        <p>
+            We believe that every handmade product and every piece of
+            digital art has a story behind it.
+        </p>
+
+    </div>
+
+
+    <div class="about-card">
+
+        <h2>What You Can Do</h2>
+
+        <div class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">🛍️</div>
+
+                <h3>Shop</h3>
+
+                <p>
+                    Discover handmade products and creative digital
+                    artworks from different sellers.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">🎨</div>
+
+                <h3>Sell</h3>
+
+                <p>
+                    Register as a seller and showcase your own
+                    products to potential customers.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">⭐</div>
+
+                <h3>Review</h3>
+
+                <p>
+                    Share your shopping experience by leaving product
+                    ratings and reviews.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="cta">
+
+    <h2>Ready to Discover Something Special?</h2>
+
+    <p>
+        Explore our store and find your next favorite product.
+    </p>
+
+    <a href="store.html">
+        Visit Our Store
+    </a>
+
+</section>
+
+
+<footer>
+
+    <div class="footer-content">
+
+        <div class="footer-brand">
+
+            <h3>
+                Bright<span>Finds</span>
+            </h3>
+
+            <p>
+                Discover unique handmade products and creative
+                digital artworks from talented sellers.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a href="store.html">Store</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="copyright">
+        © 2026 Bright Finds. All Rights Reserved.
+    </div>
+
+</footer>
+
+</body>
+</html>
